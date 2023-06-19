@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model User {
+  id                String        @id @default(cuid())
+  name              String?
+  email             String?       @unique
+  emailVerified     DateTime?
+  image             String?
+  username          String?       @unique
+  accounts          Account[]
+  sessions          Session[]
+  comments          Comment[]
+  commentVotes      CommentVote[]
+  posts             Post[]
+  postVotes         PostVote[]
+  createdSubreddits Subreddit[]
+  subscriptions     Subreddit[]   @relation("RedditSubs")
+
+  @@map("users")
+}
+
+model Subreddit {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  creatorId   String?
+  posts       Post[]
+  subscribers User[]   @relation("RedditSubs")
+
+  creator User? @relation(fields: [creatorId], references: [id])
+
+  @@index([name])
+  @@index([creatorId])
+  @@map("subreddits")
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  content     Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  subredditId String
+  authorId    String
+  comments    Comment[]
+
+  subreddit Subreddit  @relation(fields: [subredditId], references: [id], onDelete: Cascade)
+  author    User       @relation(fields: [authorId], references: [id])
+  votes     PostVote[]
+
+  @@index([subredditId])
+  @@index([authorId])
+  @@map("posts")
+}
+
+model Comment {
+  id        String        @id @default(cuid())
+  text      String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  authorId  String
+  postId    String
+  replyToId String?
+  replies   Comment[]     @relation("Replies")
+  votes     CommentVote[]
+
+  author  User     @relation(fields: [authorId], references: [id])
+  post    Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  replyTo Comment? @relation("Replies", fields: [replyToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([authorId])
+  @@index([postId])
+  @@index([replyToId])
+  @@map("comments")
+}
+
+enum VoteType {
+  UP
+  DOWN
+}
+
+model PostVote {
+  userId String
+  postId String
+  type   VoteType
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@id([userId, postId])
+  @@index([userId])
+  @@index([postId])
+  @@map("posts_votes")
+}
+
+model CommentVote {
+  userId    String
+  commentId String
+  type      VoteType
+
+  user    User    @relation(fields: [userId], references: [id])
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, commentId])
+  @@index([userId])
+  @@index([commentId])
+  @@map("comments_votes")
+}
