@@ -1,4 +1,6 @@
 import {
+  ArrowBigDown,
+  ArrowBigUp,
   ChevronLeft,
   Home,
   Image,
@@ -7,6 +9,7 @@ import {
   Loader2,
   LogOut,
   LucideProps,
+  MessageSquare,
   Moon,
   Settings,
   SunMedium,
@@ -38,6 +41,9 @@ export const Icons = {
   Home,
   Link: Link2,
   Image,
+  Message: MessageSquare,
+  UpVote: ArrowBigUp,
+  DownVote: ArrowBigDown,
   Google: (props: LucideProps) => (
     <svg role="img" viewBox="0 0 24 24" {...props}>
       <path

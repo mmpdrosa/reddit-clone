@@ -1,10 +1,13 @@
 import { format } from 'date-fns'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import * as React from 'react'
 
 import { getCurrentUser } from '@/actions/get-current-user'
-import { prisma } from '@/lib/prisma'
 import { SubredditActionsToggle } from '@/components/subreddit-actions-toggle'
+import { buttonVariants } from '@/components/ui/button'
+import { prisma } from '@/lib/prisma'
+import { cn } from '@/lib/utils'
 
 interface SubredditLayoutProps {
   children: React.ReactNode
@@ -61,12 +64,12 @@ export default async function SubredditLayout({
         <div className="grid grid-cols-1 gap-y-4 py-6 md:grid-cols-3 md:gap-x-4">
           <div className="col-span-2 flex flex-col space-y-6">{children}</div>
 
-          <div className="order-first hidden h-fit overflow-hidden rounded-lg border md:order-last md:block">
+          <div className="order-first hidden h-fit rounded-lg border md:order-last md:block">
             <div className="px-6 pt-6">
               <p className="py-3 font-semibold">About r/{slug}</p>
             </div>
 
-            <dl className="grid divide-y px-6 py-4 text-sm leading-6">
+            <dl className="divide-y px-6 py-4 text-sm leading-6">
               <div className="flex justify-between gap-x-4 py-3">
                 <dt>Created</dt>
                 <dd>
@@ -88,14 +91,23 @@ export default async function SubredditLayout({
                   <p>You created this community</p>
                 </div>
               )}
+            </dl>
 
+            <div className="grid grid-cols-1 gap-2 px-6 pb-4">
               {!isUserCreator && (
                 <SubredditActionsToggle
                   subredditId={subreddit.id}
                   isUserSubscribed={isUserSubscribed}
                 />
               )}
-            </dl>
+
+              <Link
+                href={`/r/${slug}/submit`}
+                className={cn(buttonVariants({ variant: 'outline' }))}
+              >
+                Create Post
+              </Link>
+            </div>
           </div>
         </div>
       </div>

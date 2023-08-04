@@ -6,6 +6,7 @@ import { Icons } from './icons'
 import { ModeToggle } from './mode-toggle'
 import { buttonVariants } from './ui/button'
 import { UserAccountNav } from './user-account-nav'
+import { CommandMenu } from './command-menu'
 
 export async function SiteHeader() {
   const user = await getCurrentUser()
@@ -21,8 +22,8 @@ export async function SiteHeader() {
         </div>
 
         <div className="flex flex-1 items-center justify-between space-x-2 sm:space-x-4 md:justify-end">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-            {/* <CommandMenu /> */}
+          <div className="w-full flex-1 md:w-auto">
+            <CommandMenu />
           </div>
           <nav className="flex items-center space-x-2">
             <ModeToggle />

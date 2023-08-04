@@ -35,16 +35,18 @@ export function PostCreate({ user }: PostCreateProps) {
 
         <Button
           variant="ghost"
+          size="icon"
           onClick={() => router.push(pathname + '/submit')}
         >
-          <Icons.Image />
+          <Icons.Image className="h-4 w-4" />
         </Button>
 
         <Button
           variant="ghost"
+          size="icon"
           onClick={() => router.push(pathname + '/submit')}
         >
-          <Icons.Link />
+          <Icons.Link className="h-4 w-4" />
         </Button>
       </div>
     </div>
